@@ -12,8 +12,8 @@ def ver(archivo):
         basepath = os.path.dirname(__file__) # ruta del archivo actual
         upload_path = os.path.join (basepath,'static',archivo) 
         #if os.path.exists(upload_path):
-            salida=subprocess.getoutput("cat " + upload_path)
-            return json.dumps({"status":"OK", "contenido": salida}),200
+        salida=subprocess.getoutput("cat " + upload_path)
+        return json.dumps({"status":"OK", "contenido": salida}),200
         #else:
         #    return json.dumps({"status":"ERROR", "mensaje": "El archivo no existe"}),200
     except:
