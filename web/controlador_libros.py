@@ -2,12 +2,12 @@ from __future__ import print_function
 from bd import obtener_conexion
 import sys
 
-def insertar_libro(nombre, descripcion, precio,foto):
+def insertar_libro(nombre, descripcion, precio,autor,foto):
     try:
         conexion = obtener_conexion()
         with conexion.cursor() as cursor:
             cursor.execute("INSERT INTO libros(nombre, descripcion, precio,autor,foto) VALUES (%s, %s, %s, %s, %s)",
-                       (nombre, descripcion, precio,foto))
+                       (nombre, descripcion, precio,autor,foto))
             if cursor.rowcount == 1:
                 ret={"status": "OK" }
             else:
