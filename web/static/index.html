@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APP PEPS</title>
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
     <style>
         .error{
             display: none;
@@ -42,11 +43,39 @@
     </script>
 </head>
 <body>
-    <h1>BIENVENIDO AL SISTEMA</h1>
-    <label>Usuario</label><input type="text" name="username" id="username"><br>
-    <label>Clave</label><input type="password" name="password" id="password"><br>
-    <label class="error">Usuario/clave erronea</label>
-    <button type="button" onclick="conectar()">ENVIAR</button>
-    <button type="button" onclick="location.href='registro.html'">REGISTRARSE</button>
+    <nav class="navbar is-warning" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <button class="navbar-burger is-warning button" aria-label="menu" aria-expanded="false"
+                data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="navbar-menu">
+            <div class="navbar-start">
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="columns">
+            <div class="column">
+                <h3 class="is-size-3">Iniciar sesión</h3>
+                    <label for="username">Usuario</label>
+                    <input required type="text" class="input" placeholder="Usuario" name="username" id="username">
+                    <label for="password">Clave</label>
+                    <input required type="password" class="input" placeholder="Clave" name="password" id="password">
+                    <label class="error">Usuario/Clave erróneos</label>
+                    <button type="button" onclick="conectar()" class="button is-success mt-2">Enviar</button>
+                    <button type="button" onclick="location.href='registro.html'" class="button is-success mt-2">Registrarse</button>
+                </form>
+            </div>
+        </div>
+    </section>
 </body>
 </html>
