@@ -5,6 +5,7 @@ CREATE TABLE libros(
     nombre VARCHAR(255) NOT NULL,
     descripcion VARCHAR(255) NOT NULL,
     precio DECIMAL(9,2) NOT NULL,
+    autor VARCHAR (50) NOT NULL,
 	foto VARCHAR(255)
 );
 CREATE TABLE usuarios(

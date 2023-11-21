@@ -23,7 +23,7 @@ def guardar_libro():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
         libro_json = request.json
-        ret,code=controlador_libros.insertar_libro(libro_json["nombre"], libro_json["descripcion"], float(libro_json["precio"]), libro_json["foto"])
+        ret,code=controlador_libros.insertar_libro(libro_json["nombre"], libro_json["descripcion"], float(libro_json["precio"]),libro_json["autor"], libro_json["foto"])
     else:
         ret={"status":"Bad request"}
         code=401
@@ -39,7 +39,7 @@ def actualizar_libro():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
         libro_json = request.json
-        ret,code=controlador_libros.actualizar_libro(libro_json["id"],libro_json["nombre"], libro_json["descripcion"], float(libro_json["precio"]),libro_json["foto"])
+        ret,code=controlador_libros.actualizar_libro(libro_json["id"],libro_json["nombre"], libro_json["descripcion"], float(libro_json["precio"]), libro_json["autor"],libro_json["foto"])
     else:
         ret={"status":"Bad request"}
         code=401

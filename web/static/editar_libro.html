@@ -34,18 +34,21 @@
             document.getElementById("nombre").value=libro.nombre;
             descripcion=document.getElementById("descripcion").value=libro.descripcion;
             precio=document.getElementById("precio").value=libro.precio;
+            autor=document.getElementById("autor").value=libro.autor;
             document.getElementById("foto").value=libro.foto;
         }
         function guardar(){            
             let nombre=document.getElementById("nombre").value;
             let descripcion=document.getElementById("descripcion").value;
             let precio=document.getElementById("precio").value;
+            let autor=document.getElementById("autor").value;
             let foto=document.getElementById("foto").value;
             let datos=JSON.stringify({
                 "id":id,
                 "nombre":nombre,
                 "descripcion":descripcion,
                 "precio": precio,
+                "autor":autor,
                 "foto":foto
             });
             var requestOptions = {
@@ -101,6 +104,8 @@
                 <input required type="text" class="input" placeholder="Descripción" name="descripcion" id="descripcion">
                 <label for="precio">Precio</label>
                 <input required type="number" class="input" placeholder="Precio" name="precio" id="precio">
+                <label for="descripcion">Autor</label>
+                <input required type="text" class="input" placeholder="autor" name="autor" id="autor">
                 <label for="foto">Foto</label>
                 <input required type="text" class="input" placeholder="Foto" name="foto" id="foto">
                 <button type="button" onclick="guardar()" class="button is-success mt-2">Guardar</button>
