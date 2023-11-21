@@ -14,11 +14,13 @@
             let nombre=document.getElementById("nombre").value;
             let descripcion=document.getElementById("descripcion").value;
             let precio=document.getElementById("precio").value;
+            let autor=document.getElementById("autor").value;
             let foto=document.getElementById("foto").value;
             let datos=JSON.stringify({
                 "nombre":nombre,
                 "descripcion":descripcion,
-                "precio": precio,
+                "precio":precio,
+                "autor":autor,
                 "foto":foto
             });
             var requestOptions = {
