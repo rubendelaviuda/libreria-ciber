@@ -6,7 +6,7 @@ Aplicación web de gestión de libros de una librería. Práctica para la asigna
 ### **Cómo acceder**
 Se puede acceder a través del navegador a los siguientes servicios:
 * **Apache**: Puerto 7777
-* **PHPMyAdmin**: Puerto 9093
+* **PHPMyAdmin**: Puerto 8888
 
 ### **Base de datos**
 La base de datos se crea vacía por defecto. Es necesario importarle el archivo libros.sql que hay en el ráiz del repositorio.
