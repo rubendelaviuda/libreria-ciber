@@ -27,7 +27,7 @@ services:
     volumes:
       - ./miweb:/usr/local/apache2/htdocs/
     ports:
-      - 9094:80
+      - 7777:80
     restart: unless-stopped
     depends_on:
       - python
