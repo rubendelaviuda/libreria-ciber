@@ -10,3 +10,6 @@ Se puede acceder a través del navegador a los siguientes servicios:
 
 ### **Base de datos**
 La base de datos se crea vacía por defecto. Es necesario importarle el archivo libros.sql que hay en el ráiz del repositorio.
+
+## **Documentación**
+La documentación con las capturas de pantalla de las pruebas realizadas se encuentran en el PDF de este mismo directorio.
