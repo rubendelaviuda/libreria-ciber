@@ -31,6 +31,12 @@ def convertir_libro_a_json(libro):
     d['foto'] = libro[5]
     return d
 
+
+def calculariva(importe):
+    
+ return importe*0.21
+
+ 
 def obtener_libros():
     try:
         conexion = obtener_conexion()
