@@ -18,7 +18,7 @@ services:
     environment:
       - PMA_HOST=mariadb
     ports:
-      - 9093:80
+      - 8888:80
     depends_on:
       - mariadb
   apache:
