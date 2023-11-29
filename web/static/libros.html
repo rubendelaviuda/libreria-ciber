@@ -15,16 +15,19 @@
             tbody.innerHTML="";
             lista.forEach(libro => {
                 tbody.innerHTML+=`<tr>
-                        <td><img src="${libro.foto}" width="70"></td>
+                        <td><img src="${libro.foto}z" width="70"></td>
                         <td>${libro.nombre}</td>
                         <td>${libro.descripcion}</td>
                         <td>${libro.precio}</td>
-                        <td>${libro.autor}</td>
+                        <td id="${libro.id}"></td>
                         <td>
                             <a href="/static/editar_libro.html?id=${libro.id}" class="button is-info">Editar</a>
                         </td>
                         <td>
                             <button class="button is-danger" onclick="eliminarlibro(${libro.id})">Eliminar</button>
+                        </td>
+                        <td>
+                            <button class="btn is-info" onclick="calculariva(${libro.precio},'${libro.id}')">Calcular</button>
                         </td>
             </tr>`                            
             });
@@ -52,7 +55,6 @@
             var requestOptions = {
                 method: 'DELETE'
             };
-
             fetch("/libros/"+id, requestOptions)
                 .then(response => response.json())
                 .then(result => {
@@ -68,6 +70,17 @@
                     alert("Se ha producido un error y el libro no ha podido ser eliminado")
                 });
         }
+
+        function calculariva(precio, columnaIVA){
+
+             var importe= precio*0.21;
+
+            var columna = document.getElementById(columnaIVA);
+            columna.textContent = importe;
+            
+        }
+
+
         function cerrarSesion(){
             var requestOptions = {
                 method: 'GET'
@@ -123,9 +136,10 @@
                             <th>Nombre</th>
                             <th>Descripción</th>
                             <th>Precio</th>
-                            <th>Autor</th>
+                            <th class="hidden">IVA</th>
                             <th>Editar</th>
                             <th>Eliminar</th>
+                            <th>Calcular iva</th>
                         </tr>
                     </thead>
                     <tbody>
