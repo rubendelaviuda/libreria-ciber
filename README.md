@@ -5,7 +5,7 @@ Aplicación web de gestión de libros de una librería. Práctica para la asigna
 
 ### **Cómo acceder**
 Se puede acceder a través del navegador a los siguientes servicios:
-* **Apache**: Puerto 9094
+* **Apache**: Puerto 7777
 * **PHPMyAdmin**: Puerto 9093
 
 ### **Base de datos**
