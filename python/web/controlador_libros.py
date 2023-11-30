@@ -2,12 +2,12 @@ from __future__ import print_function
 from bd import obtener_conexion
 import sys
 
-def insertar_libro(nombre, descripcion, precio,foto):
+def insertar_libro(nombre, descripcion, precio,autor,foto):
     try:
         conexion = obtener_conexion()
         with conexion.cursor() as cursor:
-            cursor.execute("INSERT INTO libros(nombre, descripcion, precio,foto) VALUES (%s, %s, %s,%s)",
-                       (nombre, descripcion, precio,foto))
+            cursor.execute("INSERT INTO libros(nombre, descripcion, precio,autor,foto) VALUES (%s, %s, %s, %s, %s)",
+                       (nombre, descripcion, precio,autor,foto))
             if cursor.rowcount == 1:
                 ret={"status": "OK" }
             else:
@@ -30,14 +30,15 @@ def convertir_libro_a_json(libro):
     d['nombre'] = libro[1]
     d['descripcion'] = libro[2]
     d['precio'] = libro[3]
-    d['foto'] = libro[4]
+    d['autor'] = libro[4]
+    d['foto'] = libro[5]
     return d
 
 def obtener_libros():
     try:
         conexion = obtener_conexion()
         with conexion.cursor() as cursor:
-            cursor.execute("SELECT id, nombre, descripcion, precio,foto FROM libros")
+            cursor.execute("SELECT id, nombre, descripcion, precio, autor, foto FROM libros")
             libros = cursor.fetchall()
             librosjson=[]
             if libros:
@@ -56,8 +57,8 @@ def obtener_libro_por_id(id):
     try:
         conexion = obtener_conexion()
         with conexion.cursor() as cursor:
-            #cursor.execute("SELECT id, nombre, descripcion, precio,foto FROM libros WHERE id = %s", (id,))
-            cursor.execute("SELECT id, nombre, descripcion, precio,foto FROM libros WHERE id =" + id)
+            #cursor.execute("SELECT id, nombre, descripcion, precio, autor, foto FROM libros WHERE id = %s", (id,))
+            cursor.execute("SELECT id, nombre, descripcion, precio, autor, foto FROM libros WHERE id =" + id)
             libro = cursor.fetchone()
             if libro is not None:
                 librojson = convertir_libro_a_json(libro)
@@ -101,12 +102,12 @@ def eliminar_libro(id):
         code=500
     return ret,code
 
-def actualizar_libro(id, nombre, descripcion, precio, foto):
+def actualizar_libro(id, nombre, descripcion, precio, autor, foto):
     try:
         conexion = obtener_conexion()
         with conexion.cursor() as cursor:
-            cursor.execute("UPDATE libros SET nombre = %s, descripcion = %s, precio = %s, foto=%s WHERE id = %s",
-                       (nombre, descripcion, precio, foto,id))
+            cursor.execute("UPDATE libros SET nombre = %s, descripcion = %s, precio = %s,autor = %s, foto=%s WHERE id = %s",
+                       (nombre, descripcion, precio, autor, foto,id))
             if cursor.rowcount == 1:
                 ret={"status": "OK" }
             else:
