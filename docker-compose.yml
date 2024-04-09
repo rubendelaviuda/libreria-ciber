@@ -1,16 +1,27 @@
 version: '3'
 services:
+  apache:
+    build: ./apache
+    container_name: apache
+    ports:
+      - 7777:80
+    restart: always
+    depends_on:
+      - python
+      - mariadb
   mariadb:
     image: mariadb
     container_name: mariadb
+    userns_mode: hosts
     restart: always
-    volumes:
-      - ./mariadb_data:/var/lib/mysql
     environment:
       MARIADB_ROOT_PASSWORD: example
       MARIADB_USER: agente
       MARIADB_USER_PASSWORD: 0traClave
       MARIADB_DATABASE: PEPS
+    volumes:
+      - ./mariadb_data:/var/lib/mysql
+      - ./libros.sql:/docker-entrypoint-initdb.d/libros.sql
   phpmyadmin:
     image: phpmyadmin
     container_name: phpmyadmin
@@ -20,17 +31,6 @@ services:
     ports:
       - 8888:80
     depends_on:
-      - mariadb
-  apache:
-    build: ./apache
-    container_name: apache
-    volumes:
-      - ./miweb:/usr/local/apache2/htdocs/
-    ports:
-      - 7777:80
-    restart: unless-stopped
-    depends_on:
-      - python
       - mariadb
   python:
     build: ./python
@@ -43,5 +43,11 @@ services:
       DB_PORT: 3306
       PORT: 8080
       HOST: 0.0.0.0
+      SECRET_KEY: "you-will-never-guess"
+      WTF_CSRF_SECRET_KEY: "asdasdas"
+    volumes:
+      - ./python/web:/app
+    ports:
+      - 9999:8080
     depends_on:
       - mariadb
