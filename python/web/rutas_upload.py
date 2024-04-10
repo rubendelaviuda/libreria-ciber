@@ -1,6 +1,6 @@
 from __future__ import print_function
 from __main__ import app
-from flask import request
+from flask import request,make_response
 import os
 import json
 import sys
@@ -14,6 +14,10 @@ def upload():
         upload_path = os.path.join (basepath,'static',user_input) 
         print('lugar' +  upload_path, file=sys.stdout)
         f.save(upload_path)
-        return json.dumps({"status": "OK"}),200
+        ret={"status": "OK"}
+        code=200
     except:
-        return json.dumps({"status": "ERROR"}), 500
+        ret={"status": "ERROR"}
+        code=500
+    response=make_response(json.dumps(ret),code)
+    return response
