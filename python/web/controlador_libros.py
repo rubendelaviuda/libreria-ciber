@@ -1,13 +1,14 @@
 from __future__ import print_function
 from bd import obtener_conexion
+from __main__ import app
+from flask import escape
 import sys
 
-def insertar_libro(nombre, descripcion, precio,autor,foto):
+def insertar_libro(nombre, descripcion, precio, autor, foto):
     try:
         conexion = obtener_conexion()
         with conexion.cursor() as cursor:
-            cursor.execute("INSERT INTO libros(nombre, descripcion, precio,autor,foto) VALUES (%s, %s, %s, %s, %s)",
-                       (nombre, descripcion, precio,autor,foto))
+            cursor.execute("INSERT INTO libros(nombre, descripcion, precio, autor, foto) VALUES (%s, %s, %s, %s, %s)",(nombre, descripcion, precio, autor, foto))
             if cursor.rowcount == 1:
                 ret={"status": "OK" }
             else:
@@ -16,22 +17,19 @@ def insertar_libro(nombre, descripcion, precio,autor,foto):
         conexion.commit()
         conexion.close()
     except:
-        print("Excepcion al insertar un libro", file=sys.stdout)
-        ret = {"status": "Failure" }
+        app.logger.info("Excepcion al insertar un libro")
+        ret = {"status": "Failure "}
         code=500
     return ret,code
 
-
-
-
 def convertir_libro_a_json(libro):
     d = {}
-    d['id'] = libro[0]
-    d['nombre'] = libro[1]
-    d['descripcion'] = libro[2]
-    d['precio'] = libro[3]
-    d['autor'] = libro[4]
-    d['foto'] = libro[5]
+    d['id'] = escape(libro[0])
+    d['nombre'] = escape(libro[1])
+    d['descripcion'] = escape(libro[2])
+    d['precio'] = escape(libro[3])
+    d['autor'] = escape(libro[4])
+    d['foto'] = escape(libro[5])
     return d
 
 def obtener_libros():
@@ -57,8 +55,7 @@ def obtener_libro_por_id(id):
     try:
         conexion = obtener_conexion()
         with conexion.cursor() as cursor:
-            #cursor.execute("SELECT id, nombre, descripcion, precio, autor, foto FROM libros WHERE id = %s", (id,))
-            cursor.execute("SELECT id, nombre, descripcion, precio, autor, foto FROM libros WHERE id =" + id)
+            cursor.execute("SELECT id, nombre, descripcion, precio, autor, foto FROM libros WHERE id = %s", (id,))
             libro = cursor.fetchone()
             if libro is not None:
                 librojson = convertir_libro_a_json(libro)
@@ -80,9 +77,6 @@ def calcularivasenior(importe, porcentaje):
     preciofinal=importe+iva
     
     return 'El importe final seria ' + str(preciofinal)
-
-
-
 
 def eliminar_libro(id):
     try:
