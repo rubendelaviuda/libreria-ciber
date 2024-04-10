@@ -1,111 +1,110 @@
-from __future__ import print_function
-from __main__ import app, csrf
-from flask import request,session, make_response
-from flask_wtf.csrf import generate_csrf
-from bd import obtener_conexion
-from funciones import cipher_password, compare_password,create_session,delete_session
+from flask import request, make_response, escape
 import json
-import sys
-import datetime as dt
+import decimal
+from __main__ import app
+from funciones import prepare_response_extra_headers,validar_session_normal,validar_session_admin
+import controlador_libros
 
-@app.route("/login",methods=['POST'])
-def login():
-    content_type = request.headers.get('Content-Type')
-    ret={"status":"ERROR"}
-    if (content_type == 'application/json'):
-        libro_json = request.json
-        username = libro_json['username']
-        passwordIn = libro_json['password']
-        try:
-            conexion = obtener_conexion()
-            with conexion.cursor() as cursor:
-                cursor.execute("SELECT perfil,clave,numAccesosErroneos FROM usuarios WHERE estado='activo' and usuario = %s",(username))
-                usuario = cursor.fetchone()
-            
-                if usuario is None:
-                    ret = {"status": "ERROR","mensaje":"Usuario/clave erroneo" }
-                else:
-                    perfil=usuario[0]
-                    password=usuario[1]
-                    numAccesosErroneos=usuario[2]
-                    estado='activo'
+class Encoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal): return float(obj)
 
-                    current_date = dt.date.today()
-                    hoy=current_date.strftime('%Y-%m-%d')
-                    
-                    if (compare_password(password.encode("utf-8"),passwordIn.encode("utf-8"))):
-                        ret = {"status": "OK","csrf_token": generate_csrf()}
-                        app.logger.info("Acceso usuario %s correcto",username)
-                        create_session(username,perfil)
-                        numAccesosErroneos=0
-                    else:
-                        app.logger.info("Acceso usuario %s incorrecto",username)
-                        numAccesosErroneos=numAccesosErroneos+1
-                        if (numAccesosErroneos>2):
-                            estado="bloqueado"
-                            app.logger.info("Usuario %s bloqueado",username)
-                        ret = {"status": "ERROR","mensaje":"Usuario/clave erroneo"}
+response_extra_headers = prepare_response_extra_headers(True)
 
-                    cursor.execute("UPDATE usuarios SET numAccesosErroneos=%s, fechaUltimoAcceso=%s, estado=%s WHERE usuario = %s",(numAccesosErroneos,hoy,estado,username))
-                    conexion.commit()
-                    conexion.close()
-                code=200
-        except:
-            print("Excepcion al validar al usuario")   
-            ret={"status":"ERROR"}
-            code=500
+@app.route("/libros",methods=["GET"])
+def libros():
+    if (validar_session_normal()):
+        ret,code= controlador_libros.obtener_libros()
     else:
-        ret={"status":"Bad request"}
-        code=401
+        ret={"status":"Forbidden"}
+        code=403
+    response=make_response(json.dumps(ret, cls = Encoder),code)
+    return response
+
+@app.route("/libro/<id>",methods=["GET"])
+def libro_por_id(id):
+    if (validar_session_normal()):
+        ret,code = controlador_libros.obtener_libro_por_id(id)
+    else:
+        ret={"status":"Forbidden"}
+        code=403
+    response=make_response(json.dumps(ret, cls = Encoder),code)
+    return response
+
+@app.route("/libros",methods=["POST"])
+def guardar_libro():
+    if (validar_session_admin()):
+        code = 200
+        content_type = request.headers.get('Content-Type')
+        if (content_type == 'application/json'):
+            libro_json = request.json
+            nombre = libro_json["nombre"].strip().replace('"', "")
+            nombre = f"{escape(nombre)}"
+            descripcion = libro_json["descripcion"].strip().replace('"', "")
+            descripcion = f"{escape(descripcion)}"
+            precio = libro_json["precio"].strip().replace('"', "")
+            precio = f"{escape(precio)}"
+            autor = libro_json["autor"].strip().replace('"', "")
+            autor = f"{escape(autor)}"
+            foto = libro_json["foto"].strip().replace('"', "")
+            foto = f"{escape(foto)}"
+            if (len(nombre) ==0 or len(nombre) > 256):
+                ret={"status":"Bad request n"}
+                code=401
+            if (code == 200 and len(descripcion) > 256):
+                ret={"status":"Bad request d"}
+                code=401
+            if (code == 200 and len(foto) > 256):
+                ret={"status":"Bad request f"}
+                code=401
+            if (code == 200 and not precio.replace(".", "").isdecimal()):
+                ret={"status":"Bad request p"}
+                code=401
+            if (code == 200 and len(autor) > 256):
+                ret={"status":"Bad Request a"}
+                code=401
+            if (code == 200):
+                try:
+                    precio = float(precio)
+                except:
+                    ret={"status":"Bad request pf"}
+                    code=401 
+            if (code == 200):
+                ret,code=controlador_libros.insertar_libro(nombre,descripcion,precio,autor,foto)
+        else:
+            ret={"status":"Bad request"}
+            code=401
+    else:
+        ret={"status":"Forbidden"}
+        code=403
+    
     response=make_response(json.dumps(ret),code)
     return response
 
-@app.route("/registro",methods=['POST'])
-def registro():
-    content_type = request.headers.get('Content-Type')
-    if (content_type == 'application/json'):
-        libro_json = request.json
-        username = libro_json['username']
-        password = libro_json['password']
-        try:
-            conexion = obtener_conexion()
-            with conexion.cursor() as cursor:
-                 cursor.execute("SELECT perfil FROM usuarios WHERE usuario = %s",(username,))
-                 usuario = cursor.fetchone()
-                 if usuario is None:
-                     passwordC=cipher_password(password);
-                     cursor.execute("INSERT INTO usuarios(usuario,clave,perfil,estado,numAccesosErroneos) VALUES(%s,%s,'normal','activo',0)",(username,passwordC))
-                     if cursor.rowcount == 1:
-                         conexion.commit()
-                         app.logger.info("Nuevo usuario creado")
-                         ret={"status": "OK" }
-                         code=200
-                     else:
-                         ret={"status": "ERROR" }
-                         code=500
-                 else:
-                   ret = {"status": "ERROR","mensaje":"Usuario ya existe" }
-                   code=200
-            conexion.close()
-        except:
-            print("Excepcion al registrar al usuario")   
-            ret={"status":"ERROR"}
-            code=500
+@app.route("/libros/<id>", methods=["DELETE"])
+def eliminar_libro(id):
+    if (validar_session_admin()):
+        ret,code=controlador_libros.eliminar_libro(id)
     else:
-        ret={"status":"Bad request"}
-        code=401
+        ret={"status":"Forbidden"}
+        code=403
+    
     response=make_response(json.dumps(ret),code)
     return response
 
+@app.route("/libros", methods=["PUT"])
+def actualizar_libro():
+    if (validar_session_admin()):
+        content_type = request.headers.get('Content-Type')
+        if (content_type == 'application/json'):
+            libro_json = request.json
+            ret,code=controlador_libros.actualizar_libro(libro_json["id"],libro_json["nombre"], libro_json["descripcion"], float(libro_json["precio"]), libro_json["autor"], libro_json["foto"])
+        else:
+            ret={"status":"Bad request"}
+            code=401
+    else:
+        ret={"status":"Forbidden"}
+        code=403
 
-@app.route("/logout",methods=['GET'])
-def logout():
-    try:
-        delete_session()
-        ret={"status":"OK"}
-        code=200
-    except:
-        ret={"status":"ERROR"}
-        code=500
     response=make_response(json.dumps(ret),code)
     return response
