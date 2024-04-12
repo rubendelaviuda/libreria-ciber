@@ -10,5 +10,5 @@ Se puede acceder a través del navegador a los siguientes servicios:
 * **Python**: Puerto 9999
 
 
-### **Documentación**
-La documentación con las capturas de pantalla de las pruebas realizadas se encuentran en el PDF de este mismo directorio.
+### **Archivos**
+La documentación y ejercicios solicitados se encuentran en el directorio documentacion.
